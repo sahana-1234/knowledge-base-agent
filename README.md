@@ -48,7 +48,7 @@ No cloud calls
 
 All embeddings + inference happen on the user's machine
 
-Perfect for confidential data
+
 --------------------------------------------------------------------------------------------
 ⚠️ Limitations
 
@@ -64,7 +64,7 @@ Even though the agent is powerful, it has some limitations:
 
 ❌ No online LLM API support
 
-❌ No user authentication (anyone with link can use it)
+
 --------------------------------------------------------------------------------------------
 🏗️ Tech Stack
 
