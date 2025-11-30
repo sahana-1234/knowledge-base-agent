@@ -1,60 +1,121 @@
 📘 Knowledge Base Agent (PDF-QA Chatbot using Chroma + Ollama + Streamlit)
+🧩 Overview
 
-A local, privacy-focused AI system that lets users:
-
-✔ Upload multiple PDFs
-✔ Ingest & embed them using ChromaDB
-✔ Ask questions about the documents
-✔ Chat with retrieved context
-✔ Delete individual documents
-✔ Toggle dark/light theme
-✔ View processed document list
-
-Built using: Ollama (Qwen 1.5B) + ChromaDB + Streamlit.
-
+The Knowledge Base Agent is an AI-powered system that allows users to upload PDF documents and interact with them through a conversational chat interface.
+It uses local LLM inference through Ollama, combined with ChromaDB vector search, to answer user queries strictly based on uploaded documents.
+This ensures privacy, accuracy, and offline capability.
+-------------------------------------------------------------------------
 🚀 Features
 🔍 1. Multi-document PDF Ingestion
 
 Upload multiple PDFs
 
-Automatic chunking
+Automatic text extraction
 
-Embedding using nomic-embed-text
+Text chunking using RecursiveCharacterTextSplitter
+
+Embedding generated using nomic-embed-text
 
 Stored locally in ChromaDB
 
-🧠 2. Intelligent Retrieval + LLM Response
+🧠 2. Retrieval-Augmented Generation (RAG)
 
-User question → Query vector DB → Retrieve best chunks
+User question → semantic search in vector DB → best chunks retrieved
 
-LLM (Ollama Qwen 1.5B) generates final answer
+LLM (Ollama Qwen 1.5B) generates answer ONLY from documents
+
+Prevents hallucination using a strict prompt template
 
 📄 3. Document Manager
 
 List all uploaded documents
 
-Show upload timestamp
+Display file name, upload timestamp, number of chunks
 
-Show number of chunks
-
-Delete individual documents
+Delete individual documents from vector DB
 
 🌗 4. Dark/Light Mode Toggle
+
+Clean UI with modern theme and automatic text color updates.
+
 💬 5. Persistent Chat History
-🔐 6. Local Privacy
 
-No cloud required — everything runs on your laptop.
+Conversation stays on screen until the user clears it.
 
+🔐 6. Fully Local & Private
+
+No cloud calls
+
+All embeddings + inference happen on the user's machine
+
+Perfect for confidential data
+--------------------------------------------------------------------------------------------
+⚠️ Limitations
+
+Even though the agent is powerful, it has some limitations:
+
+❌ Requires laptop to be ON for Ngrok demo link
+
+❌ Slow on low-performance CPUs (LLM runs locally)
+
+❌ Cannot answer questions outside uploaded documents
+
+❌ Limited model size (Qwen 1.5B is small compared to GPT-4)
+
+❌ No online LLM API support
+
+❌ No user authentication (anyone with link can use it)
+--------------------------------------------------------------------------------------------
 🏗️ Tech Stack
-Component	Technology
-LLM	Ollama (Qwen 1.5B)
-Embeddings	nomic-embed-text
-Vector DB	ChromaDB
-Backend	Python
-UI	Streamlit
-Tunneling	Ngrok
-PDF Parsing	PyPDF2
+
+| Component                | Technology              |
+| ------------------------ | ----------------------- |
+| **Local LLM**            | Ollama — *Qwen2.5:1.5B* |
+| **Embeddings**           | nomic-embed-text        |
+| **Vector Database**      | ChromaDB                |
+| **Frontend UI**          | Streamlit               |
+| **Frameworks**           | LangChain, PyPDFLoader  |
+| **Deployment (Demo)**    | Ngrok                   |
+| **Programming Language** | Python                  |
+
+-------------------------------------------------------------------------------------
+🧱 Architecture Diagram (High-Level)
+
+            ┌──────────────────────────┐
+            │        User UI           │
+            │     (Streamlit App)      │
+            └────────────┬─────────────┘
+                         │
+                         ▼
+            ┌──────────────────────────┐
+            │ PDF Upload & Processing  │
+            │  (PyPDFLoader, Splitter) │
+            └────────────┬─────────────┘
+                         │
+                         ▼
+            ┌──────────────────────────┐
+            │  Embedding Generation    │
+            │  (Ollama Embeddings)     │
+            └────────────┬─────────────┘
+                         │
+                         ▼
+            ┌──────────────────────────┐
+            │   ChromaDB Vector Store  │
+            └────────────┬─────────────┘
+                         │
+                         ▼
+            ┌──────────────────────────┐
+            │    Retriever (k=5)       │
+            └────────────┬─────────────┘
+                         │
+                         ▼
+            ┌──────────────────────────┐
+            │    Ollama LLM (Qwen)     │
+            │  Generate Final Answer   │
+            └──────────────────────────┘
+----------------------------------------------------------------------------------
 📁 Project Structure
+
 kb_agent/
 ├── app.py
 ├── ingest.py
@@ -62,10 +123,11 @@ kb_agent/
 ├── data/
 │   ├── sample_company_doc.pdf
 │   ├── MAJOR-SYNOPSIS-Last1.pdf
-├── db/                      # ChromaDB persistent storage
+├── db/
 ├── requirements.txt
 └── chat_history.db
 
+-----------------------------------------------------------------------------------
 ⚙️ Installation & Local Setup
 1️⃣ Clone the repository
 git clone https://github.com/sahana-1234/knowledge-base-agent.git
@@ -73,7 +135,7 @@ cd knowledge-base-agent
 
 2️⃣ Create a virtual environment
 python -m venv venv
-venv\Scripts\activate   # Windows
+venv\Scripts\activate
 
 3️⃣ Install dependencies
 pip install -r requirements.txt
@@ -82,25 +144,43 @@ pip install -r requirements.txt
 ollama pull qwen2.5:1.5b
 ollama pull nomic-embed-text
 
-5️⃣ Run Streamlit app
+5️⃣ Run the Streamlit app
+streamlit run app.py
+---------------------------------------------------------------------------
+🌍 Public Demo (Ngrok - Required for Jury)
+
+Start Streamlit:
+
 streamlit run app.py
 
-🌍 Optional: Public Demo Using Ngrok
+
+Start Ngrok with permanent domain:
+
 cd C:\ngrok
 ./ngrok http --domain=yong-noninflationary-reactively.ngrok-free.dev 8501
+------------------------------------------------------------------
 
+Your demo link:
 
-Share the generated link:
 👉 https://yong-noninflationary-reactively.ngrok-free.dev
+---------------------------------------------------------------------------
 
 🔮 Future Improvements
 
-Fine-tuned model for your domain
+Larger LLM support (LLaMA, Mixtral, Phi-3)
 
-Support for DOCX / Excel
+Cloud deployment using API-based LLMs
 
-Hybrid search (BM25 + embeddings)
+OCR support for scanned PDFs
 
-Admin login panel
+User authentication
 
-GPU inference support
+Multi-user document isolation
+
+DOCX, PPTX, XLSX support
+
+GPU acceleration
+
+Faster retrieval using hybrid search
+
+Document summary mode
